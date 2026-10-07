@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Careers Hunter
 
-## Getting Started
+[![CI](https://github.com/yogigodaraa/careers-hunter/actions/workflows/ci.yml/badge.svg)](https://github.com/yogigodaraa/careers-hunter/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-First, run the development server:
+Find companies that hire for your target role in any country or region, then draft a short,
+personalised outreach email for each one, grounded in your CV. Bring your own Claude,
+OpenAI or Gemini key.
+
+**Live demo:** <https://careers-hunter.vercel.app>
+
+## What it does
+
+1. **Pick a role.** Four presets: AI developer, software engineer, cybersecurity, network engineer (`src/lib/roles.ts`).
+2. **Pick a location** (country + optional region) and how many companies (5–50).
+3. **Research.** The LLM returns a list of companies with website, careers page, size, industry
+   and a one-line reason to approach them. It is told never to invent a careers email.
+4. **Draft.** Paste your CV once. For any company, generate a 140–180-word email (subject + body),
+   then copy it or open it in your mail client via a `mailto:` link.
+5. **Track.** Add companies to a pipeline board: queued → emailed → replied → interview → rejected.
+
+> **Important:** company research comes from the model's own knowledge. There is **no live web
+> search**, so results can be outdated or wrong. Always check the company's website before
+> you send anything.
+
+## Screenshots
+
+<!-- TODO: add screenshots of the role workspace and pipeline board (use a fake CV) -->
+_Coming soon._
+
+## Privacy
+
+| Data | Where it's kept | Where it's sent |
+|---|---|---|
+| API key | Browser `localStorage` | With each request to this app's `/api/research` or `/api/draft-email` route, which forwards it to the chosen provider |
+| CV text | Browser `localStorage` | Only when you draft an email: route → provider |
+| Pipeline | Browser `localStorage` | Nowhere |
+
+There is no database and no server-side logging. Clearing your browser storage removes everything.
+Details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md#privacy).
+
+## Tech stack
+
+- Next.js 16 (App Router), React 19, TypeScript
+- Tailwind CSS v4
+- No SDKs: LLM calls use plain `fetch` to Anthropic (`claude-sonnet-4-20250514`), OpenAI (`gpt-4o-mini`) and Google (`gemini-2.0-flash`)
+
+## Quickstart
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yogigodaraa/careers-hunter.git
+cd careers-hunter
+npm ci
+npm run dev        # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+No environment variables are needed. You paste your key into the UI.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Checks
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npx tsc --noEmit
+npm run build
+```
 
-## Learn More
+There's no automated test suite yet (see the roadmap).
 
-To learn more about Next.js, take a look at the following resources:
+## Project layout
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```text
+src/
+  app/
+    page.tsx                 role picker
+    roles/[slug]/page.tsx    workspace for one role
+    pipeline/page.tsx        pipeline board
+    api/research/route.ts    POST → company list (LLM)
+    api/draft-email/route.ts POST → {subject, body} (LLM)
+  components/                RoleWorkspace, CompanyCard, CVPanel, LLMKeyPanel, PipelineBoard, …
+  lib/
+    llm.ts                   provider-agnostic `complete()` + JSON extraction
+    research.ts / drafts.ts  prompts + response sanitising
+    pipeline.ts              localStorage-backed pipeline
+    roles.ts                 role presets
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project status
 
-## Deploy on Vercel
+Active. A working MVP.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Roadmap
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [ ] Unit tests for `extractJson` and the research/draft response sanitisers
+- [ ] Optional live web search to verify companies and careers pages
+- [ ] Export the pipeline as CSV
+<!-- TODO(yogi): add your own roadmap items -->
+
+## License
+
+MIT. See [LICENSE](LICENSE).
