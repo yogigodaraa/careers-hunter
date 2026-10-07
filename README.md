@@ -2,6 +2,9 @@
 
 [![CI](https://github.com/yogigodaraa/careers-hunter/actions/workflows/ci.yml/badge.svg)](https://github.com/yogigodaraa/careers-hunter/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Status: maintenance](https://img.shields.io/badge/status-maintenance%20only-lightgrey)
+
+> **Status: complete — maintenance only.** This project works and stays online, but no new features are planned. Security updates are still applied.
 
 Find companies that hire for your target role in any country or region, then draft a short,
 personalised outreach email for each one, grounded in your CV. Bring your own Claude,
